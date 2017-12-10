@@ -25,7 +25,7 @@ router.post('/create', (req, res, next) => {
 				User.findById({"_id": req.body.user}).then(user => {
 					user.markers.push(newMarker);
 					user.save();
-					res.json({success: true, msg: 'Marker Created Success'})
+					res.json({success: true, msg: 'Marker Created Success', user: user})
 				})
 			}
 		}
@@ -113,6 +113,27 @@ router.post('/updateDraggable/:id', (req, res) => {
 		}
 	})
 })
+
+router.post('/delete/:id', (req, res) => {
+	const user = req.body.author
+	User.findById({_id: user}).then(user => {
+		if(user) {
+			user.markers.remove(req.body._id)
+			user.save()
+			Marker.findOneAndRemove({_id: req.body._id}, (err, marker) => {
+				let markers = user.markers
+				if(err) {
+					return console.log(err)
+				} else {
+					res.json({success: true, msg: 'Markers Info Updated!', markers: markers})
+				}
+			})
+		} else {
+			console.log('User not found')
+		}
+	})
+})
+
 
 
 module.exports = router
