@@ -2,13 +2,16 @@ const mongoose = require('mongoose')
 const bcrypt = require('bcryptjs')
 const config = require('../config/database')
 
+const ObjectId = mongoose.Schema.Types.ObjectId
+
 // User Schema
 const UseSchema = mongoose.Schema({
 	name: {type: String},
 	username: {type: String, required: true, unique: true},
 	email: {type: String, required: true, unique: true},
 	password: {type: String, required: true},
-	roles: []
+	roles: [],
+	markers: [{type: ObjectId, ref: 'Marker'}]
 })
 
 const User = module.exports = mongoose.model('User', UseSchema)
@@ -37,7 +40,8 @@ module.exports.addUser = function (newUser, callback) {
 module.exports.seedAdminUser = async () => {
 	try {
 		let users = await User.find()
-		if (users.length > 0) return
+		if (users.length > 0)  return console.log('Admin Exist')
+		console.log('Error with Admin')
 		bcrypt.genSalt(10, (err, salt) => {
 			bcrypt.hash('Admin', salt, (err, hash) => {
 				if(err) {
@@ -48,7 +52,8 @@ module.exports.seedAdminUser = async () => {
 					username: 'Admin',
 					email: 'Admin@abv.bg',
 					password: hash,
-					roles: ['Admin']
+					roles: ['Admin'],
+					markers: []
 				})
 			})
 		})

@@ -4,6 +4,7 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const passport = require('passport')
 const User = require('./models/User')
+const Marker = require('./models/Marker')
 
 // DB Setup
 const mongoose = require('mongoose')
@@ -30,6 +31,7 @@ mongoose.connection.on('error', (error) => {
 
 const app = express()
 const users = require('./routes/users')
+const markers = require('./routes/markers')
 const port = 3000
 app.use(cors())
 
@@ -43,6 +45,7 @@ app.use(passport.session())
 require('./config/passport')(passport)
 
 app.use('/users', users)
+app.use('/markers', markers)
 
 app.get('/', (req, res) => {
 	res.send('Invalid Endpoint')
