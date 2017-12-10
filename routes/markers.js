@@ -15,7 +15,7 @@ router.post('/create', (req, res, next) => {
 		draggable: true,
 		editName: false,
 		editInfo: false,
-		private: true
+		privacy: true
 	})
 	Marker.addMarker(newMarker, (err, marker) => {
 		if(err) {
@@ -34,7 +34,7 @@ router.post('/create', (req, res, next) => {
 
 // Get all markers by type
 router.get('/getAll', (req, res, next) => {
-	Marker.find().then(markers => {
+	Marker.find().populate('author').then(markers => {
 		if(markers) {
 			res.json({success: true, msg: 'Markers get correctly', markers: markers})
 		} else {
@@ -44,7 +44,7 @@ router.get('/getAll', (req, res, next) => {
 })
 
 router.get('/getAllPublic', (req, res, next) => {
-	Marker.find({private: false}).then(markers => {
+	Marker.find({privacy: false}).populate('author').then(markers => {
 		if(markers) {
 			res.json({success: true, msg: 'Markers get correctly', markers: markers})
 		} else {
@@ -54,7 +54,7 @@ router.get('/getAllPublic', (req, res, next) => {
 })
 
 router.get('/getAllPrivate', (req, res, next) => {
-	Marker.find({private: true}).then(markers => {
+	Marker.find({privacy: true}).populate('author').then(markers => {
 		if(markers) {
 			res.json({success: true, msg: 'Markers get correctly', markers: markers})
 		} else {
@@ -63,35 +63,56 @@ router.get('/getAllPrivate', (req, res, next) => {
 	})
 })
 
-// Get all markers by type for USER
-router.get('/getAll/:id', (req, res, next) => {
-	Marker.find().then(markers => {
-		if(markers) {
-			res.json({success: true, msg: 'Markers get correctly', markers: markers})
+// Update marker
+router.post('/updateName/:id', (req, res) => {
+	Marker.findOneAndUpdate({_id: req.body._id}, {$set:{name: req.body.name} }, {new: true}, (err, marker) => {
+		if(err) {
+			return console.log(err)
 		} else {
-			res.json({success: false, msg: 'No markers found'})
+			res.json({success: true, msg: 'Markers Name Updated!', marker: marker})
 		}
 	})
 })
 
-router.get('/getAllPublic/:id', (req, res, next) => {
-	Marker.find({private: false}).then(markers => {
-		if(markers) {
-			res.json({success: true, msg: 'Markers get correctly', markers: markers})
+router.post('/updateInfo/:id', (req, res) => {
+	Marker.findOneAndUpdate({_id: req.body._id}, {$set:{info: req.body.info} }, {new: true}, (err, marker) => {
+		if(err) {
+			return console.log(err)
 		} else {
-			res.json({success: false, msg: 'No markers found'})
+			res.json({success: true, msg: 'Markers Info Updated!', marker: marker})
 		}
 	})
 })
 
-router.get('/getAllPrivate/:id', (req, res, next) => {
-	Marker.find({private: true}).then(markers => {
-		if(markers) {
-			res.json({success: true, msg: 'Markers get correctly', markers: markers})
+router.post('/updatePosition/:id', (req, res) => {
+	Marker.findOneAndUpdate({_id: req.body._id}, {$set:{lat: req.body.lat, lng: req.body.lng} }, {new: true}, (err, marker) => {
+		if(err) {
+			return console.log(err)
 		} else {
-			res.json({success: false, msg: 'No markers found'})
+			res.json({success: true, msg: 'Markers Info Updated!', marker: marker})
 		}
 	})
 })
+
+router.post('/updatePrivacy/:id', (req, res) => {
+	Marker.findOneAndUpdate({_id: req.body._id}, {$set:{privacy: req.body.privacy} }, {new: true}, (err, marker) => {
+		if(err) {
+			return console.log(err)
+		} else {
+			res.json({success: true, msg: 'Markers Info Updated!', marker: marker})
+		}
+	})
+})
+
+router.post('/updateDraggable/:id', (req, res) => {
+	Marker.findOneAndUpdate({_id: req.body._id}, {$set:{draggable: req.body.draggable} }, {new: true}, (err, marker) => {
+		if(err) {
+			return console.log(err)
+		} else {
+			res.json({success: true, msg: 'Markers Info Updated!', marker: marker})
+		}
+	})
+})
+
 
 module.exports = router

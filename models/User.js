@@ -11,7 +11,8 @@ const UseSchema = mongoose.Schema({
 	email: {type: String, required: true, unique: true},
 	password: {type: String, required: true},
 	roles: [],
-	markers: [{type: ObjectId, ref: 'Marker'}]
+	markers: [{type: ObjectId, ref: 'Marker'}],
+	/*comments: [{type: ObjectId, ref: 'Comment'}]*/
 })
 
 const User = module.exports = mongoose.model('User', UseSchema)
@@ -41,7 +42,6 @@ module.exports.seedAdminUser = async () => {
 	try {
 		let users = await User.find()
 		if (users.length > 0)  return console.log('Admin Exist')
-		console.log('Error with Admin')
 		bcrypt.genSalt(10, (err, salt) => {
 			bcrypt.hash('Admin', salt, (err, hash) => {
 				if(err) {
@@ -52,8 +52,7 @@ module.exports.seedAdminUser = async () => {
 					username: 'Admin',
 					email: 'Admin@abv.bg',
 					password: hash,
-					roles: ['Admin'],
-					markers: []
+					roles: ['Admin']
 				})
 			})
 		})

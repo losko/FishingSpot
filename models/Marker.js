@@ -13,8 +13,8 @@ const MarkerSchema = mongoose.Schema({
 	draggable: {type: Boolean, required: true},
 	editName: {type: Boolean, required: true},
 	editInfo: {type: Boolean, required: true},
-	author: {type: ObjectId, ref: 'Marker', required: true},
-	private: {type: Boolean, required: true}
+	author: {type: ObjectId, ref: 'User', required: true},
+	privacy: {type: Boolean, required: true}
 })
 
 const Marker = module.exports = mongoose.model('Marker', MarkerSchema)
