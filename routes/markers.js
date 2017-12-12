@@ -22,7 +22,7 @@ router.post('/create', (req, res, next) => {
 			res.json({success: false, msg: 'Fail to Create Marker'})
 		} else {
 			if(newMarker) {
-				User.findById({"_id": req.body.user}).then(user => {
+				User.findById({"_id": req.body.user}).populate('markers').then(user => {
 					user.markers.push(newMarker);
 					user.save();
 					res.json({success: true, msg: 'Marker Created Success', user: user})
@@ -116,7 +116,7 @@ router.post('/updateDraggable/:id', (req, res) => {
 
 router.post('/delete/:id', (req, res) => {
 	const user = req.body.author
-	User.findById({_id: user}).then(user => {
+	User.findById({_id: user}).populate('markers').then(user => {
 		if(user) {
 			user.markers.remove(req.body._id)
 			user.save()
