@@ -4,34 +4,6 @@ const config = require('../config/database')
 const Marker = require('../models/Marker')
 const User = require('../models/User')
 
-// Create
-router.post('/create', (req, res, next) => {
-	const newMarker = new Marker({
-		name: req.body.name,
-		info: req.body.info,
-		lat: req.body.lat,
-		lng: req.body.lng,
-		author: req.body.user,
-		draggable: true,
-		editName: false,
-		editInfo: false,
-		privacy: true
-	})
-	Marker.addMarker(newMarker, (err, marker) => {
-		if(err) {
-			res.json({success: false, msg: 'Fail to Create Marker'})
-		} else {
-			if(newMarker) {
-				User.findById({"_id": req.body.user}).populate('markers').then(user => {
-					user.markers.push(newMarker);
-					user.save();
-					res.json({success: true, msg: 'Marker Created Success', user: user})
-				})
-			}
-		}
-	})
-})
-
 // Get all markers by type
 router.get('/getAll', (req, res, next) => {
 	Marker.find().populate('author').then(markers => {
@@ -115,7 +87,7 @@ router.post('/updateDraggable/:id', (req, res) => {
 })
 
 router.post('/delete/:id', (req, res) => {
-	const user = req.body.author
+	const user = req.body.author._id
 	User.findById({_id: user}).populate('markers').then(user => {
 		if(user) {
 			user.markers.remove(req.body._id)
@@ -133,5 +105,7 @@ router.post('/delete/:id', (req, res) => {
 		}
 	})
 })
+
+
 
 module.exports = router
