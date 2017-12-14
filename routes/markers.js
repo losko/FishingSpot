@@ -3,6 +3,7 @@ const router = express.Router()
 const config = require('../config/database')
 const Marker = require('../models/Marker')
 const User = require('../models/User')
+const MarkerDetails = require('../models/MarkerDetails')
 
 // Create
 router.post('/create', (req, res, next) => {
@@ -22,10 +23,22 @@ router.post('/create', (req, res, next) => {
 			res.json({success: false, msg: 'Fail to Create Marker'})
 		} else {
 			if(newMarker) {
-				User.findById({"_id": req.body.user}).populate('markers').then(user => {
-					user.markers.push(newMarker);
-					user.save();
-					res.json({success: true, msg: 'Marker Created Success', user: user})
+				const newDetails = {
+					name: newMarker.name,
+					detailsInfo: 'Please enter detail information about yout fishing trip here.',
+					imgUrl: 'http://dfff.mpltd.ca/wp-content/uploads/sites/31/2016/08/DFFF-1920x1080-banner-1.jpg',
+					marker: marker._id
+				}
+				MarkerDetails.create(newDetails).then((details, err) => {
+					Marker.findById(marker._id).then(marker => {
+						marker.markerDetails = details.id
+						marker.save()
+						User.findById({"_id": req.body.user}).populate('markers').then(user => {
+							user.markers.push(marker);
+							user.save()
+							res.json({success: true, msg: 'Marker Created Success', user: user})
+						})
+					})
 				})
 			}
 		}
@@ -116,17 +129,20 @@ router.post('/updateDraggable/:id', (req, res) => {
 
 router.post('/delete/:id', (req, res) => {
 	const user = req.body.author
+	const id = req.body._id
 	User.findById({_id: user}).populate('markers').then(user => {
 		if(user) {
-			user.markers.remove(req.body._id)
+			user.markers.remove(id)
 			user.save()
 			Marker.findOneAndRemove({_id: req.body._id}, (err, marker) => {
-				let markers = user.markers
-				if(err) {
-					return console.log(err)
-				} else {
-					res.json({success: true, msg: 'Markers Info Updated!', markers: markers})
-				}
+				MarkerDetails.findOneAndRemove({marker: id}, (err, marker) => {
+					let markers = user.markers
+					if(err) {
+						return console.log(err)
+					} else {
+						res.json({success: true, msg: 'Markers Info Updated!', markers: markers})
+					}
+				})
 			})
 		} else {
 			console.log('User not found')

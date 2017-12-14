@@ -5,6 +5,7 @@ const cors = require('cors')
 const passport = require('passport')
 const User = require('./models/User')
 const Marker = require('./models/Marker')
+const MarkerDetails = require('./models/MarkerDetails')
 
 // DB Setup
 const mongoose = require('mongoose')
@@ -30,6 +31,7 @@ mongoose.connection.on('error', (error) => {
 })
 
 const app = express()
+const markerDetails = require('./routes/markerDetails')
 const users = require('./routes/users')
 const markers = require('./routes/markers')
 const admin = require('./routes/admin')
@@ -45,6 +47,7 @@ app.use(passport.session())
 
 require('./config/passport')(passport)
 
+app.use('/markerDetails', markerDetails)
 app.use('/users', users)
 app.use('/markers', markers)
 app.use('/admin', admin)

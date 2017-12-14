@@ -14,6 +14,7 @@ const MarkerSchema = mongoose.Schema({
 	editName: {type: Boolean, required: true},
 	editInfo: {type: Boolean, required: true},
 	author: {type: ObjectId, ref: 'User', required: true},
+	markerDetails: {type: ObjectId, ref: 'MarkerDetails'},
 	privacy: {type: Boolean, required: true}
 })
 

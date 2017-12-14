@@ -41,12 +41,10 @@ router.post('/authenticate', (req, res, next) => {
 			}
 			if(isMatch) {
 				const token = jwt.sign({user: user}, config.secret)
-
 				let isAdmin = false
 				if(user.roles[0] === 'Admin') {
 					isAdmin = true
 				}
-
 				res.json({
 					success: true,
 					msg: 'Logged In',

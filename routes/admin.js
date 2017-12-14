@@ -3,6 +3,7 @@ const router = express.Router()
 const config = require('../config/database')
 const Marker = require('../models/Marker')
 const User = require('../models/User')
+const MarkerDetauls = require('../models/MarkerDetails')
 
 // Get all markers by type
 router.get('/getAllMarkers', (req, res, next) => {
@@ -141,9 +142,12 @@ router.post('/deleteUser/:id', (req, res) => {
 	const userId = req.body._id
 	User.findOneAndRemove({_id: userId}).then((user) => {
 		if(user) {
-			Marker.find().remove({author: {$in: user}}, (err) => {
-				if(err) {
-					res.json({success: false, msg: 'Users Not Found'})
+			Marker.findOneAndRemove({author: user._id}).then(marker => {
+				if(marker) {
+					const markerDetailsId = marker.markerDetails
+					MarkerDetauls.findOneAndRemove({_id: markerDetailsId}).then(markerDerals => {
+						res.json({success: true, msg: 'Users Deleted'})
+					})
 				} else {
 					res.json({success: true, msg: 'Users Deleted'})
 				}
