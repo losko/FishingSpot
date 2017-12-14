@@ -43,7 +43,7 @@ module.exports.seedAdminUser = async () => {
 		let users = await User.find()
 		if (users.length > 0)  return console.log('Admin Exist')
 		bcrypt.genSalt(10, (err, salt) => {
-			bcrypt.hash('Admin', salt, (err, hash) => {
+			bcrypt.hash('PaR0laA9m1n', salt, (err, hash) => {
 				if(err) {
 					return
 				}
